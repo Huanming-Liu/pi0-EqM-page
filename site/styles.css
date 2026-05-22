@@ -312,28 +312,28 @@ pre {
   background: #ffffff;
 }
 
-.filter-bar {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 22px 0;
+.video-carousel {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  gap: 14px;
+  align-items: center;
+  margin-top: 22px;
 }
 
-.filter-button {
-  min-height: 34px;
+.carousel-button {
+  width: 42px;
+  height: 42px;
   border: 1px solid #bbbbbb;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #ffffff;
   color: #333333;
-  padding: 0 14px;
   cursor: pointer;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 1.8rem;
+  line-height: 1;
 }
 
-.filter-button.active,
-.filter-button:hover {
+.carousel-button:hover {
   border-color: #333333;
   background: #333333;
   color: #ffffff;
@@ -341,7 +341,7 @@ pre {
 
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--videos-per-page, 3), minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -376,15 +376,11 @@ pre {
   font-size: 0.86rem;
 }
 
-.tag {
-  display: inline-block;
-  margin-top: 8px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 2px 8px;
+.carousel-status {
+  margin: 12px 0 0;
   color: var(--muted);
-  font-size: 0.75rem;
-  text-transform: uppercase;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 @media (max-width: 780px) {
@@ -394,9 +390,19 @@ pre {
 
   .simple-grid,
   .summary-row,
-  .figure-grid,
-  .video-grid {
+  .figure-grid {
     grid-template-columns: 1fr;
+  }
+
+  .video-carousel {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 8px;
+  }
+
+  .carousel-button {
+    width: 34px;
+    height: 34px;
+    font-size: 1.45rem;
   }
 
   .text-column p {
