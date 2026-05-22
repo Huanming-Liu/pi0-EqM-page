@@ -218,14 +218,12 @@
           <figure class="main-figure compact">
             <img src="assets/robotwin_demos.gif" alt="RoboTwin evaluation demos">
           </figure>
-          <div class="filter-bar" role="tablist" aria-label="Video filters">
-            <button class="filter-button active" type="button" data-filter="all">All</button>
-            <button class="filter-button" type="button" data-filter="pick">Pick</button>
-            <button class="filter-button" type="button" data-filter="place">Place</button>
-            <button class="filter-button" type="button" data-filter="stack">Stack</button>
-            <button class="filter-button" type="button" data-filter="interaction">Interact</button>
+          <div class="video-carousel" aria-label="RoboTwin video carousel">
+            <button class="carousel-button" type="button" id="video-prev" aria-label="Previous videos">‹</button>
+            <div class="video-grid" id="video-grid"></div>
+            <button class="carousel-button" type="button" id="video-next" aria-label="Next videos">›</button>
           </div>
-          <div class="video-grid" id="video-grid"></div>
+          <p class="carousel-status" id="video-status" aria-live="polite"></p>
         </div>
       </section>
 
