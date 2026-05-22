@@ -44,7 +44,10 @@ const videos = [
 
 const resultBody = document.querySelector("#robotwin-results");
 const videoGrid = document.querySelector("#video-grid");
-const filterButtons = document.querySelectorAll(".filter-button");
+const prevVideoButton = document.querySelector("#video-prev");
+const nextVideoButton = document.querySelector("#video-next");
+const videoStatus = document.querySelector("#video-status");
+let videoStartIndex = 0;
 
 function formatDelta(delta) {
   if (delta > 0) return `+${delta}`;
@@ -69,10 +72,18 @@ function renderResults() {
 }
 
 function renderVideos() {
-  videoGrid.innerHTML = videos
-    .map(([slug, title, category]) => {
+  const perPage = getVideosPerPage();
+  const visibleVideos = [];
+
+  for (let i = 0; i < perPage; i += 1) {
+    visibleVideos.push(videos[(videoStartIndex + i) % videos.length]);
+  }
+
+  videoGrid.style.setProperty("--videos-per-page", perPage);
+  videoGrid.innerHTML = visibleVideos
+    .map(([slug, title]) => {
       return `
-        <article class="video-card" data-category="${category}">
+        <article class="video-card">
           <video
             src="eval_result_videos/${slug}.mp4"
             preload="metadata"
@@ -84,27 +95,35 @@ function renderVideos() {
           <div class="video-card-body">
             <h3>${title}</h3>
             <p><code>${slug}</code></p>
-            <span class="tag">${category}</span>
           </div>
         </article>
       `;
     })
     .join("");
+
+  const endIndex = videoStartIndex + perPage;
+  videoStatus.textContent = `${videoStartIndex + 1}-${Math.min(endIndex, videos.length)} of ${videos.length}`;
 }
 
-function installFilters() {
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const filter = button.dataset.filter;
-      filterButtons.forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-      document.querySelectorAll(".video-card").forEach((card) => {
-        card.hidden = filter !== "all" && card.dataset.category !== filter;
-      });
-    });
-  });
+function getVideosPerPage() {
+  if (window.matchMedia("(max-width: 640px)").matches) return 1;
+  if (window.matchMedia("(max-width: 980px)").matches) return 2;
+  return 3;
+}
+
+function stepVideos(direction) {
+  const perPage = getVideosPerPage();
+  const nextIndex = videoStartIndex + direction * perPage;
+  videoStartIndex = (nextIndex + videos.length) % videos.length;
+  renderVideos();
+}
+
+function installVideoCarousel() {
+  prevVideoButton.addEventListener("click", () => stepVideos(-1));
+  nextVideoButton.addEventListener("click", () => stepVideos(1));
+  window.addEventListener("resize", renderVideos, { passive: true });
 }
 
 renderResults();
 renderVideos();
-installFilters();
+installVideoCarousel();
