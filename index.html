@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="pi0-EqM: Equilibrium Matching for Closed-Loop Vision-Language-Action Control."
+    >
+    <title>pi0-EqM</title>
+    <link rel="stylesheet" href="site/styles.css">
+  </head>
+  <body>
+    <main>
+      <section class="paper-hero">
+        <div class="container narrow">
+          <h1>π<sub>0</sub>-EqM: Equilibrium Matching for Closed-Loop Vision-Language-Action Control</h1>
+
+          <p class="authors">
+            <a href="mailto:lhm_0410@mail.ustc.edu.cn">Huanming Liu</a><sup>1,*</sup>,
+            <a href="mailto:acondaway@sjtu.edu.cn">Congsheng Xu</a><sup>2,*</sup>,
+            <a href="mailto:jianmin@ustc.edu.cn">Jianmin Ji</a><sup>1,†</sup>,
+            and <a href="mailto:muyao@sjtu.edu.cn">Yao Mu</a><sup>2,†</sup>
+          </p>
+
+          <p class="affiliations">
+            <sup>1</sup>University of Science and Technology of China &nbsp;&nbsp;
+            <sup>2</sup>Shanghai Jiao Tong University
+          </p>
+          <p class="notes">* Equal contribution. † Corresponding authors.</p>
+
+          <div class="link-row" aria-label="Project links">
+            <a class="link-button" href="paper.pdf">Paper</a>
+            <a class="link-button" href="../ieeeconf/main.tex">LaTeX</a>
+            <a class="link-button" href="#videos">Videos</a>
+            <a class="link-button" href="../README.md">README</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <figure class="main-figure">
+            <img src="assets/teaser.png" alt="pi0-EqM overview">
+            <figcaption>
+              Overview of π<sub>0</sub>-EqM. We replace only the action decoder
+              in π<sub>0</sub> and cast action generation as iterative
+              equilibrium solving, enabling adaptive stopping and warm starts.
+              An executable intermediate action may appear before full numerical
+              convergence.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="abstract">
+        <div class="container text-column">
+          <h2>Abstract</h2>
+          <p>
+            Currently, Vision-Language-Action (VLA) models have become the most
+            adopted paradigm for robotic manipulation for its great potential for
+            task generalization. While most generative flow-matching action
+            decoders for VLA control are often deployed with fixed sampling
+            horizons, limiting state-dependent compute and temporal reuse across
+            control cycles.
+          </p>
+          <p>
+            We present π<sub>0</sub>-EqM, which replaces the flow-matching expert
+            in π<sub>0</sub> with an Equilibrium Matching (EqM) decoder while
+            leaving the upstream VLA stack unchanged. Under a matched 300-step
+            budget, π<sub>0</sub>-EqM improves RoboTwin average success from
+            40.4% to 50.2% across 19 tasks and remains competitive on LIBERO,
+            with its clearest gain on LIBERO-10 (87.0%).
+          </p>
+          <p>
+            Two threshold scans reveal a task-dependent non-monotonic relation
+            between residual and success, which we term the
+            stationarity-executability gap. The results suggest that inference
+            depth in iterative VLA control is part of policy design and introduce
+            an energy-based VLA perspective that may inform future work on
+            composable action generation across tasks and embodiments.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="method">
+        <div class="container">
+          <h2>Method</h2>
+          <div class="simple-grid">
+            <article>
+              <h3>Action Decoding as Iterative Inference</h3>
+              <p>
+                Rather than treating decoding as a fixed-cost black box, we view
+                it as iterative inference whose depth is a controllable policy
+                variable. EqM provides the mathematical scaffolding for this
+                view.
+              </p>
+            </article>
+            <article>
+              <h3>Equilibrium Matching for VLA Control</h3>
+              <p>
+                Unlike diffusion or flow-matching policies that parameterize
+                time-indexed score or velocity fields, EqM learns a
+                time-invariant conditional vector field. The roots of this field
+                correspond to the target equilibrium action chunks.
+              </p>
+            </article>
+            <article>
+              <h3>Adaptive Inference Depth</h3>
+              <p>
+                The normalized lookahead residual exposes state-dependent
+                test-time compute without changing the upstream VLA stack.
+              </p>
+            </article>
+            <article>
+              <h3>Structural Warm-Start</h3>
+              <p>
+                Because EqM decoding is independent of a fixed noise schedule,
+                we can exploit temporal coherence between consecutive control
+                cycles.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <div class="container">
+          <h2>Results</h2>
+          <p class="lead">
+            Under a matched 300-step budget, π<sub>0</sub>-EqM improves 12 tasks,
+            degrades 5, and ties 2, raising the average success rate from 40.4
+            to 50.2.
+          </p>
+
+          <div class="summary-row">
+            <div>
+              <span class="summary-number">40.4 → 50.2</span>
+              <span class="summary-label">RoboTwin average success</span>
+            </div>
+            <div>
+              <span class="summary-number">85.2 → 87.0</span>
+              <span class="summary-label">LIBERO-10 success</span>
+            </div>
+            <div>
+              <span class="summary-number">+9.8</span>
+              <span class="summary-label">RoboTwin average improvement</span>
+            </div>
+          </div>
+
+          <h3>RoboTwin</h3>
+          <div class="table-wrap" tabindex="0" aria-label="RoboTwin task results table">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>π<sub>0</sub></th>
+                  <th>π<sub>0</sub>-EqM</th>
+                  <th>Δ</th>
+                </tr>
+              </thead>
+              <tbody id="robotwin-results"></tbody>
+            </table>
+          </div>
+
+          <h3>LIBERO</h3>
+          <div class="table-wrap small-table" tabindex="0" aria-label="LIBERO results table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Suite</th>
+                  <th>π<sub>0</sub></th>
+                  <th>π<sub>0</sub>-EqM</th>
+                  <th>Δ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>LIBERO-Spatial</td><td>96.8</td><td>97.2</td><td>+0.4</td></tr>
+                <tr><td>LIBERO-Object</td><td>98.8</td><td>98.4</td><td>-0.4</td></tr>
+                <tr><td>LIBERO-Goal</td><td>95.8</td><td>94.8</td><td>-1.0</td></tr>
+                <tr><td>LIBERO-10</td><td>85.2</td><td>87.0</td><td>+1.8</td></tr>
+                <tr><td>Average</td><td>94.15</td><td>94.35</td><td>+0.20</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="analysis">
+        <div class="container">
+          <h2>Threshold Scans</h2>
+          <p class="lead">
+            Threshold scans reveal task-dependent non-monotonicity. The
+            preferred threshold is task dependent, so the same residual threshold
+            changes both solver cost and closed-loop behavior.
+          </p>
+          <div class="figure-grid">
+            <figure>
+              <img src="assets/threshold_scan.png" alt="Threshold scans on two RoboTwin tasks">
+              <figcaption>Threshold scans on two RoboTwin tasks.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/click_alarmclock_regimes.png" alt="EqM inference trajectory on click_alarmclock">
+              <figcaption>
+                Qualitative EqM inference trajectory on click_alarmclock,
+                showing early attraction, semantic shaping, and over-refinement.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="videos">
+        <div class="container">
+          <h2>Evaluation Videos</h2>
+          <p class="lead">
+            We evaluate on the 19-task RoboTwin benchmark. Representative
+            rollouts from the included videos are shown below.
+          </p>
+          <figure class="main-figure compact">
+            <img src="assets/robotwin_demos.gif" alt="RoboTwin evaluation demos">
+          </figure>
+          <div class="filter-bar" role="tablist" aria-label="Video filters">
+            <button class="filter-button active" type="button" data-filter="all">All</button>
+            <button class="filter-button" type="button" data-filter="pick">Pick</button>
+            <button class="filter-button" type="button" data-filter="place">Place</button>
+            <button class="filter-button" type="button" data-filter="stack">Stack</button>
+            <button class="filter-button" type="button" data-filter="interaction">Interact</button>
+          </div>
+          <div class="video-grid" id="video-grid"></div>
+        </div>
+      </section>
+
+      <section class="section" id="citation">
+        <div class="container text-column">
+          <h2>BibTeX</h2>
+          <pre><code>@misc{liu2026pi0eqm,
+  title  = {$\pi_0$-EqM: Equilibrium Matching for Closed-Loop Vision-Language-Action Control},
+  author = {Liu, Huanming and Xu, Congsheng and Ji, Jianmin and Mu, Yao},
+  year   = {2026}
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <script src="site/script.js"></script>
+  </body>
+</html>
